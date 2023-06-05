@@ -19,6 +19,8 @@ services:
       - ${DCAPE_ROOT}/${DATA_PATH}/media:/opt/netbox/netbox/media
       - ${DCAPE_ROOT}/${DATA_PATH}/reports:/opt/netbox/netbox/reports
       - ${DCAPE_ROOT}/${DATA_PATH}/scripts:/opt/netbox/netbox/scripts
+    labels:
+      - traefik.http.services.${APP_TAG}.loadbalancer.server.port=8080
     environment:
       - DB_HOST=db
       - DB_NAME=${PGDATABASE}
@@ -56,7 +58,6 @@ services:
 
   netbox-worker:
     image: ${IMAGE}:${IMAGE_VER}
-#    <<: *app
     depends_on:
       app:
         condition: service_healthy
@@ -71,10 +72,33 @@ services:
       test: "ps -aux | grep -v grep | grep -q rqworker || exit 1"
     networks:
       - lan
+    environment:
+      - DB_HOST=db
+      - DB_NAME=${PGDATABASE}
+      - DB_USER=${PGUSER}
+      - DB_PASSWORD=${PGPASSWORD}
+      - REDIS_PASSWORD
+      - REDIS_CACHE_PASSWORD
+      - SECRET_KEY
+      - GRAPHQL_ENABLED=true
+      - HOUSEKEEPING_INTERVAL=86400
+      - MEDIA_ROOT=/opt/netbox/netbox/media
+      - METRICS_ENABLED=false
+      - REDIS_CACHE_DATABASE=1
+      - REDIS_CACHE_HOST=redis-cache
+      - REDIS_CACHE_INSECURE_SKIP_TLS_VERIFY=false
+      - REDIS_CACHE_SSL=false
+      - REDIS_DATABASE=0
+      - REDIS_HOST=redis
+      - REDIS_INSECURE_SKIP_TLS_VERIFY=false
+      - REDIS_SSL=false
+      - RELEASE_CHECK_URL=https://api.github.com/repos/netbox-community/netbox/releases
+      - SKIP_SUPERUSER=true
+      - WEBHOOKS_ENABLED=true
+      - CORS_ORIGIN_ALLOW_ALL=True
 
   netbox-housekeeping:
     image: ${IMAGE}:${IMAGE_VER}
-#    <<: *app
     depends_on:
       app:
         condition: service_healthy
@@ -87,6 +111,30 @@ services:
       test: "ps -aux | grep -v grep | grep -q housekeeping || exit 1"
     networks:
       - lan
+    environment:
+      - DB_HOST=db
+      - DB_NAME=${PGDATABASE}
+      - DB_USER=${PGUSER}
+      - DB_PASSWORD=${PGPASSWORD}
+      - REDIS_PASSWORD
+      - REDIS_CACHE_PASSWORD
+      - SECRET_KEY
+      - GRAPHQL_ENABLED=true
+      - HOUSEKEEPING_INTERVAL=86400
+      - MEDIA_ROOT=/opt/netbox/netbox/media
+      - METRICS_ENABLED=false
+      - REDIS_CACHE_DATABASE=1
+      - REDIS_CACHE_HOST=redis-cache
+      - REDIS_CACHE_INSECURE_SKIP_TLS_VERIFY=false
+      - REDIS_CACHE_SSL=false
+      - REDIS_DATABASE=0
+      - REDIS_HOST=redis
+      - REDIS_INSECURE_SKIP_TLS_VERIFY=false
+      - REDIS_SSL=false
+      - RELEASE_CHECK_URL=https://api.github.com/repos/netbox-community/netbox/releases
+      - SKIP_SUPERUSER=true
+      - WEBHOOKS_ENABLED=true
+      - CORS_ORIGIN_ALLOW_ALL=True
 
   # redis
   redis:

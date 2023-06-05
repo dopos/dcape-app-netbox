@@ -73,18 +73,7 @@ else
 endif
 
 
-## create user
-user-add:
-	@docker exec -it $(CONTAINER_ID) /gotosocial/gotosocial admin account create \
-	  --username $(USER_NAME) \
-	  --email $(USER_EMAIL) \
-	  --password '$(USER_PASS)'
+## create superuser
+admin-add: CMD=run app ./manage.py createsuperuser
+admin-add: dc
 
-## promote user to admin
-user-admin:
-	@docker exec -it $(CONTAINER_ID) /gotosocial/gotosocial admin account promote --username $(USER_NAME)
-
-## create file storage with perms
-storage:
-	@path=$(DCAPE_ROOT)/$(DATA_PATH) ; \
-	[ -d $$path ] || sudo install -o $(DCAPE_GTS_UID) -g $(DCAPE_GTS_GID) -d $$path
