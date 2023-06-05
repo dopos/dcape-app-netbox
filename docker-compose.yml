@@ -104,6 +104,3 @@ services:
       - ${DCAPE_ROOT}/${DATA_PATH}/redis-cache:/data
     networks:
       - lan
-
-#      - ${DCAPE_ROOT}/${DATA_PATH}:/gotosocial/storage
-
